@@ -389,6 +389,64 @@
         border: 1px solid rgba(216,180,102,0.18);
         font-size: 0.75rem;
       }
+      .detail-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+      }
+      .detail-editor {
+        margin-top: 20px;
+        display: grid;
+        gap: 12px;
+      }
+      .detail-editor label {
+        display: grid;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .detail-editor input,
+      .detail-editor textarea {
+        width: 100%;
+        padding: 0.8rem 0.9rem;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.02);
+        color: var(--text);
+      }
+      .detail-editor textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .destination-story {
+        margin-top: 40px;
+        display: grid;
+        gap: 18px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 26px;
+        padding: 24px;
+      }
+      .destination-story-image {
+        height: 320px;
+        border-radius: 20px;
+        background-size: cover;
+        background-position: center;
+        border: 1px solid var(--line);
+      }
+      .destination-story h3 {
+        margin: 0;
+        font-size: clamp(2.2rem, 4vw, 3.2rem);
+      }
+      .destination-story p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.8;
+      }
 
       .about-layout, .journal-grid {
         display: grid;
@@ -682,8 +740,38 @@
                   opplevelsesrik reise i Norge.
                 </p>
                 <div class="detail-tags" id="detailTags"></div>
+
+                <div class="detail-actions">
+                  <button class="btn btn-primary" id="readMoreButton" type="button">Les mer</button>
+                </div>
+
+                <div class="detail-editor">
+                  <label>
+                    Bilde-URL
+                    <input id="destinationImageInput" type="url" placeholder="https://..." />
+                  </label>
+                  <label>
+                    Tekst om stedet
+                    <textarea id="destinationTextInput" placeholder="Skriv inn tekst om denne reisen..."></textarea>
+                  </label>
+                  <button class="btn btn-secondary" id="saveDestinationDetails" type="button">Legg til bilde og tekst</button>
+                </div>
               </div>
             </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="destinationStorySection">
+        <div class="container">
+          <div class="destination-story">
+            <span class="eyebrow">Les mer</span>
+            <h3 id="destinationStoryTitle">Bergen</h3>
+            <div class="destination-story-image" id="destinationStoryImage"></div>
+            <p id="destinationStoryText">
+              Bergen er en by som åpner seg sakte og kjærlighetsfullt. Her ligger havet og fjellene i samme pust,
+              og hver enkelt dag føles som om den har blitt laget med tilstrekkelig ro til å bli husket.
+            </p>
           </div>
         </div>
       </section>
@@ -808,9 +896,15 @@
       const detailTitle = document.getElementById("detailTitle");
       const detailDescription = document.getElementById("detailDescription");
       const detailTags = document.getElementById("detailTags");
+      const destinationImageInput = document.getElementById("destinationImageInput");
+      const destinationTextInput = document.getElementById("destinationTextInput");
+      const destinationStoryTitle = document.getElementById("destinationStoryTitle");
+      const destinationStoryImage = document.getElementById("destinationStoryImage");
+      const destinationStoryText = document.getElementById("destinationStoryText");
       const galleryGrid = document.getElementById("galleryGrid");
       const journalList = document.getElementById("journalList");
       const themeToggle = document.getElementById("themeToggle");
+      const readMoreButton = document.getElementById("readMoreButton");
 
       const destinations = [
         {
@@ -818,6 +912,7 @@
           title: "Bergen",
           region: "Vestlandet",
           description: "Bryggen, fjellene og den varme, åpne kystluften gjør Bergen til den perfekte start på en lang og opplevelsesrik reise i Norge.",
+          story: "Bergen er en by som åpner seg sakte og kjærlighetsfullt. Her ligger havet og fjellene i samme pust, og hver enkelt dag føles som om den har blitt laget med tilstrekkelig ro til å bli husket.",
           image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
           tags: ["Brygge", "Fjord", "Høst"],
           lat: 60.3913,
@@ -828,6 +923,7 @@
           title: "Lofoten",
           region: "Nordland",
           description: "Lofotens kalde, dramatiske formasjoner og lys som glitrer over havet gir inntrykk av et sted som er både stille og evig i bevegelse.",
+          story: "Lofoten har et lys som føles som et gammelt minne. Her er hav og fjell så intimt forbundet at hver kveld blir til et maleri av stillhet, vind og nordlys.",
           image: "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80",
           tags: ["Nordlys", "Fjord", "Helg"],
           lat: 68.2215,
@@ -838,6 +934,7 @@
           title: "Oslo",
           region: "Østlandet",
           description: "Byen der kultur, sjø og natur møtes i samme åndedrag. Her er det kort til kai, café, museum og et rolig sommerlyst hjerte.",
+          story: "Oslo har en rolig eleganse som gjør det enkelt å oppdage både byens liv og dens stillhet. Fra sjøen til museene ligger byen som et godt sted for langsomme, men dyptbevisste reiser.",
           image: "https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?auto=format&fit=crop&w=1200&q=80",
           tags: ["By", "Kultur", "Sjø"],
           lat: 59.9139,
@@ -848,6 +945,7 @@
           title: "Reykjavík",
           region: "Island",
           description: "Norsk og islendingsk kultur møtes i dette lekre, nordlige bylandskapet med vulkaniske landskap og stille hav.",
+          story: "Reykjavík byr på et skapende voldsomt lys og et land som ser ut som om det er skapt for store øyeblikk. Her er naturen like dramatisk som menneskene som reiser gjennom den.",
           image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
           tags: ["Kyst", "Geotermisk", "Nord"],
           lat: 64.1466,
@@ -858,6 +956,7 @@
           title: "Paris",
           region: "Frankrike",
           description: "Lys, historie og caféer i et av verdens mest inspirerende byrom. Her går romantikk, kunst og dagligliv sammen.",
+          story: "Paris er en by som oppleves både i store utsikter og i små, intime detaljer: et kaffebord, et gatehjørne, en vind som flytter i de gamle husene.",
           image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80",
           tags: ["By", "Kunst", "Romantikk"],
           lat: 48.8566,
@@ -868,6 +967,7 @@
           title: "Marrakech",
           region: "Marokko",
           description: "Markeder, varme farger og sandfarget lys gjør Marrakech til et sted fylt av liv, lyd og mystikk.",
+          story: "Marrakech er et sted der hver gate ser ut som den har en egen historie. Fargene, luktene og lydene fyller oppmerksomheten og gjør hver liten oppdagelse ekstra levende.",
           image: "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&q=80",
           tags: ["Markeder", "Sand", "Farger"],
           lat: 31.6295,
@@ -878,6 +978,7 @@
           title: "Cape Town",
           region: "Sør-Afrika",
           description: "Mellom hav, fjell og et fantastisk sollys ligger Cape Town som et møtepunkt mellom havets ro og storhetens drama.",
+          story: "Cape Town er et reisemål som skifter karakter med morgen, sol og hav. Her føles hver utsikt som en skildring av både mot og ro.",
           image: "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80",
           tags: ["Hav", "Fjell", "Kyst"],
           lat: -33.9249,
@@ -888,6 +989,7 @@
           title: "Kyoto",
           region: "Japan",
           description: "Tempel, kuperte gater og stille skoglandskap gjør Kyoto til et sted som inviterer til ro og observasjon.",
+          story: "Kyoto er alle de stille, lysfulle øyeblikkene som blir store fordi de blir opplevd med åpenhet. Her finnes tid og ro i samme åndedrag.",
           image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80",
           tags: ["Tempel", "Kultur", "Ro"],
           lat: 35.0116,
@@ -934,6 +1036,11 @@
           attribution: "&copy; OpenStreetMap contributors"
         }).addTo(map);
 
+        Object.values(mapMarkers).forEach((marker) => {
+          map.removeLayer(marker);
+        });
+        mapMarkers = {};
+
         destinations.forEach((destination) => {
           const marker = L.marker([destination.lat, destination.lng]).addTo(map);
           marker.bindPopup(`<strong>${destination.title}</strong><br>${destination.region}`);
@@ -978,6 +1085,12 @@
         `).join("");
       }
 
+      function updateStoryPanel(destination) {
+        destinationStoryTitle.textContent = destination.title;
+        destinationStoryImage.style.backgroundImage = `url('${destination.image}')`;
+        destinationStoryText.textContent = destination.story;
+      }
+
       function selectDestination(id) {
         const destination = destinations.find((item) => item.id === id) || destinations[0];
         detailImage.style.backgroundImage = `url('${destination.image}')`;
@@ -985,15 +1098,44 @@
         detailTitle.textContent = destination.title;
         detailDescription.textContent = destination.description;
         detailTags.innerHTML = destination.tags.map((tag) => `<span>${tag}</span>`).join("");
+        destinationImageInput.value = destination.image;
+        destinationTextInput.value = destination.story;
+        updateStoryPanel(destination);
 
-        Object.entries(mapMarkers).forEach(([key, marker]) => {
-          marker.setIcon(new L.Icon.Default());
-          if (key === destination.id) {
-            marker.openPopup();
-            map.flyTo([destination.lat, destination.lng], 4, { duration: 1.2 });
-          }
-        });
+        if (map && mapMarkers[destination.id]) {
+          map.flyTo([destination.lat, destination.lng], 4, { duration: 1.2 });
+          mapMarkers[destination.id].openPopup();
+        }
       }
+
+      readMoreButton.addEventListener("click", () => {
+        const destination = destinations.find((item) => item.title === detailTitle.textContent) || destinations[0];
+        updateStoryPanel(destination);
+        document.getElementById("destinationStorySection").scrollIntoView({ behavior: "smooth" });
+      });
+
+      document.getElementById("saveDestinationDetails").addEventListener("click", () => {
+        const destination = destinations.find((item) => item.title === detailTitle.textContent) || destinations[0];
+        const newImage = destinationImageInput.value.trim();
+        const newText = destinationTextInput.value.trim();
+
+        if (newImage) {
+          destination.image = newImage;
+        }
+
+        if (newText) {
+          destination.description = newText;
+          destination.story = newText;
+        }
+
+        detailImage.style.backgroundImage = `url('${destination.image}')`;
+        detailDescription.textContent = destination.description;
+        updateStoryPanel(destination);
+        renderGallery();
+        if (map) {
+          initializeMap();
+        }
+      });
 
       themeToggle.addEventListener("click", () => {
         const current = document.body.dataset.theme;
@@ -1017,8 +1159,9 @@
           title: formData.get("title"),
           region: formData.get("region"),
           image: formData.get("image"),
-          tags: (formData.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean),
+          story: formData.get("description"),
           description: formData.get("description"),
+          tags: (formData.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean),
           lat: 40,
           lng: 12
         };
