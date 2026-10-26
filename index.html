@@ -284,7 +284,7 @@
       .map-panel {
         position: relative;
         min-height: 520px;
-        background: linear-gradient(180deg, rgba(10, 13, 16, 0.6), rgba(10, 13, 16, 0.9));
+        background: linear-gradient(180deg, rgba(10, 13, 16, 0.75), rgba(10, 13, 16, 0.85));
         border: 1px solid var(--line);
       }
 
@@ -658,7 +658,7 @@
 
           <div class="map-layout">
             <div class="map-panel" aria-label="Interaktivt kart over reisemål">
-              <div class="map-label">Norge</div>
+              <div class="map-label">Verdenskart</div>
               <div class="map-stage" id="mapStage"></div>
             </div>
 
@@ -810,7 +810,7 @@
           description: "Bryggen, fjellene og den varme, åpne kystluften gjør Bergen til den perfekte start på en lang og opplevelsesrik reise i Norge.",
           image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
           tags: ["Brygge", "Fjord", "Høst"],
-          position: { left: "48%", top: "44%" }
+          position: { left: "28%", top: "33%" }
         },
         {
           id: "lofoten",
@@ -819,7 +819,7 @@
           description: "Lofotens kalde, dramatiske formasjoner og lys som glitrer over havet gir inntrykk av et sted som er både stille og evig i bevegelse.",
           image: "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80",
           tags: ["Nordlys", "Fjord", "Helg"],
-          position: { left: "67%", top: "24%" }
+          position: { left: "31%", top: "23%" }
         },
         {
           id: "oslo",
@@ -828,7 +828,52 @@
           description: "Byen der kultur, sjø og natur møtes i samme åndedrag. Her er det kort til kai, café, museum og et rolig sommerlyst hjerte.",
           image: "https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?auto=format&fit=crop&w=1200&q=80",
           tags: ["By", "Kultur", "Sjø"],
-          position: { left: "54%", top: "52%" }
+          position: { left: "30%", top: "44%" }
+        },
+        {
+          id: "reykjavik",
+          title: "Reykjavík",
+          region: "Island",
+          description: "Norsk og islendingsk kultur møtes i dette lekre, nordlige bylandskapet med vulkaniske landskap og stille hav.",
+          image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
+          tags: ["Kyst", "Geotermisk", "Nord"],
+          position: { left: "22%", top: "27%" }
+        },
+        {
+          id: "paris",
+          title: "Paris",
+          region: "Frankrike",
+          description: "Lys, historie og caféer i et av verdens mest inspirerende byrom. Her går romantikk, kunst og dagligliv sammen.",
+          image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80",
+          tags: ["By", "Kunst", "Romantikk"],
+          position: { left: "41%", top: "34%" }
+        },
+        {
+          id: "marrakech",
+          title: "Marrakech",
+          region: "Marokko",
+          description: "Markeder, varme farger og sandfarget lys gjør Marrakech til et sted fylt av liv, lyd og mystikk.",
+          image: "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&q=80",
+          tags: ["Markeder", "Sand", "Farger"],
+          position: { left: "43%", top: "46%" }
+        },
+        {
+          id: "capetown",
+          title: "Cape Town",
+          region: "Sør-Afrika",
+          description: "Mellom hav, fjell og et fantastisk sollys ligger Cape Town som et møtepunkt mellom havets ro og storhetens drama.",
+          image: "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80",
+          tags: ["Hav", "Fjell", "Kyst"],
+          position: { left: "51%", top: "76%" }
+        },
+        {
+          id: "kyoto",
+          title: "Kyoto",
+          region: "Japan",
+          description: "Tempel, kuperte gater og stille skoglandskap gjør Kyoto til et sted som inviterer til ro og observasjon.",
+          image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80",
+          tags: ["Tempel", "Hav", "Kultur"],
+          position: { left: "76%", top: "40%" }
         }
       ];
 
@@ -862,26 +907,25 @@
         const svgNS = "http://www.w3.org/2000/svg";
         const svg = document.createElementNS(svgNS, "svg");
         svg.setAttribute("class", "map-svg");
-        svg.setAttribute("viewBox", "0 0 760 540");
+        svg.setAttribute("viewBox", "0 0 1000 520");
         svg.setAttribute("role", "img");
-        svg.setAttribute("aria-label", "Kart over Norge");
+        svg.setAttribute("aria-label", "Verdenskart med reisemål");
 
         svg.innerHTML = `
           <defs>
-            <linearGradient id="mapGlow" x1="0%" x2="100%" y1="0%" y2="100%">
-              <stop offset="0%" stop-color="rgba(216,180,102,0.35)" />
+            <linearGradient id="landGlow" x1="0%" x2="100%" y1="0%" y2="100%">
+              <stop offset="0%" stop-color="rgba(216,180,102,0.28)" />
               <stop offset="100%" stop-color="rgba(216,180,102,0.08)" />
             </linearGradient>
           </defs>
-          <g opacity="0.9">
-            <path d="M116 110 L178 58 L258 70 L336 38 L432 78 L502 94 L570 150 L610 188 L640 246 L616 286 L574 332 L520 358 L478 412 L432 432 L394 492 L342 470 L300 498 L220 474 L170 430 L124 334 L92 268 L108 196 Z"
-              fill="rgba(255,255,255,0.06)" stroke="rgba(216,180,102,0.34)" stroke-width="2.2" />
-            <path d="M162 170 L206 132 L252 136 L278 120 L314 108 L360 126 L428 154 L468 138 L520 164 L546 212 L536 236 L470 258 L442 298 L386 326 L348 306 L294 304 L264 332 L218 342 L182 322 L170 260 Z"
-              fill="rgba(216,180,102,0.07)" stroke="rgba(216,180,102,0.18)" stroke-width="1.2" />
-            <path d="M282 112 L290 164 L326 192 L412 188 L450 210 L468 246 L442 282 L390 290 L352 278 L318 300 L280 290 L246 296 L222 262 L212 216 L234 174 L248 138 Z"
-              fill="url(#mapGlow)" opacity="0.56" />
-            <path d="M200 200 L238 182 L258 208 L278 218 L310 208 L344 220 L386 214 L408 236 L406 268 L374 284 L330 286 L300 312 L272 330 L246 336 L226 320 L206 280 Z"
-              fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="1" />
+          <g fill="rgba(255,255,255,0.05)" stroke="rgba(216,180,102,0.38)" stroke-width="1.6">
+            <path d="M78 120 L170 88 L248 98 L304 82 L360 110 L332 158 L286 188 L220 192 L168 220 L124 196 L90 164 Z"/>
+            <path d="M206 200 L238 178 L286 190 L308 220 L292 266 L246 286 L220 246 Z"/>
+            <path d="M288 146 L360 110 L420 120 L466 148 L510 170 L548 160 L576 192 L562 230 L532 252 L506 282 L468 318 L430 298 L402 332 L358 338 L332 300 L320 258 L292 228 L278 182 Z"/>
+            <path d="M420 178 L520 156 L596 172 L640 206 L700 196 L760 224 L746 274 L686 322 L618 344 L572 332 L516 290 L476 258 L438 224 Z"/>
+            <path d="M700 284 L778 278 L826 302 L854 330 L844 372 L788 394 L724 380 L692 342 Z"/>
+            <path d="M604 334 L622 390 L678 414 L704 456 L658 486 L612 454 L580 392 Z"/>
+            <path d="M764 332 L792 326 L830 354 L820 390 L788 408 L756 394 L742 356 Z"/>
           </g>
         `;
 
