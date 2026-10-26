@@ -31,7 +31,7 @@
       body[data-theme="sand"] {
         --bg: #f4efe7;
         --bg-soft: #f8f3ec;
-        --panel: rgba(255, 250, 243, 0.76);
+        --panel: rgba(255, 250, 243, 0.75);
         --panel-strong: #f6e7d0;
         --card: #fdf9f4;
         --text: #231a12;
@@ -51,7 +51,7 @@
       body {
         margin: 0;
         background:
-          radial-gradient(circle at top, rgba(216, 180, 102, 0.14), transparent 25%),
+          radial-gradient(circle at top, rgba(216, 180, 102, 0.12), transparent 25%),
           linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
         color: var(--text);
         font-family: "Inter", sans-serif;
@@ -141,7 +141,6 @@
       }
 
       .nav a:hover, .nav a:focus-visible { color: var(--text); }
-
       .nav-actions { display: flex; gap: 12px; align-items: center; }
 
       .btn {
@@ -285,17 +284,10 @@
       .map-panel {
         position: relative;
         min-height: 520px;
-        background:
-          linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
-          url("https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1200&q=80") center/cover no-repeat;
-        isolation: isolate;
+        background: linear-gradient(180deg, rgba(10, 13, 16, 0.6), rgba(10, 13, 16, 0.9));
+        border: 1px solid var(--line);
       }
-      .map-panel::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(0,0,0,0.14), rgba(0,0,0,0.4));
-      }
+
       .map-label {
         position: absolute;
         left: 22px;
@@ -306,18 +298,28 @@
         gap: 8px;
         padding: 8px 14px;
         border-radius: 999px;
-        background: rgba(8, 10, 12, 0.4);
+        background: rgba(8, 10, 12, 0.5);
         border: 1px solid rgba(255,255,255,0.13);
         font-size: 0.8rem;
         letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--gold-soft);
       }
+
+      .map-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
       .map-stage {
         position: absolute;
         inset: 0;
         z-index: 1;
       }
+
       .marker {
         position: absolute;
         transform: translate(-50%, -50%);
@@ -330,6 +332,7 @@
         cursor: pointer;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
+
       .marker:hover, .marker:focus-visible, .marker.active {
         transform: translate(-50%, -50%) scale(1.12);
         box-shadow: 0 0 0 14px rgba(216, 180, 102, 0.28), 0 16px 32px rgba(0,0,0,0.3);
@@ -856,10 +859,39 @@
       function renderMap() {
         mapStage.innerHTML = "";
 
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttribute("class", "map-svg");
+        svg.setAttribute("viewBox", "0 0 760 540");
+        svg.setAttribute("role", "img");
+        svg.setAttribute("aria-label", "Kart over Norge");
+
+        svg.innerHTML = `
+          <defs>
+            <linearGradient id="mapGlow" x1="0%" x2="100%" y1="0%" y2="100%">
+              <stop offset="0%" stop-color="rgba(216,180,102,0.35)" />
+              <stop offset="100%" stop-color="rgba(216,180,102,0.08)" />
+            </linearGradient>
+          </defs>
+          <g opacity="0.9">
+            <path d="M116 110 L178 58 L258 70 L336 38 L432 78 L502 94 L570 150 L610 188 L640 246 L616 286 L574 332 L520 358 L478 412 L432 432 L394 492 L342 470 L300 498 L220 474 L170 430 L124 334 L92 268 L108 196 Z"
+              fill="rgba(255,255,255,0.06)" stroke="rgba(216,180,102,0.34)" stroke-width="2.2" />
+            <path d="M162 170 L206 132 L252 136 L278 120 L314 108 L360 126 L428 154 L468 138 L520 164 L546 212 L536 236 L470 258 L442 298 L386 326 L348 306 L294 304 L264 332 L218 342 L182 322 L170 260 Z"
+              fill="rgba(216,180,102,0.07)" stroke="rgba(216,180,102,0.18)" stroke-width="1.2" />
+            <path d="M282 112 L290 164 L326 192 L412 188 L450 210 L468 246 L442 282 L390 290 L352 278 L318 300 L280 290 L246 296 L222 262 L212 216 L234 174 L248 138 Z"
+              fill="url(#mapGlow)" opacity="0.56" />
+            <path d="M200 200 L238 182 L258 208 L278 218 L310 208 L344 220 L386 214 L408 236 L406 268 L374 284 L330 286 L300 312 L272 330 L246 336 L226 320 L206 280 Z"
+              fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="1" />
+          </g>
+        `;
+
+        mapStage.appendChild(svg);
+
         destinations.forEach((destination) => {
           const marker = document.createElement("button");
           marker.type = "button";
           marker.className = "marker";
+          marker.dataset.id = destination.id;
           marker.setAttribute("aria-label", `Vis ${destination.title}`);
           marker.style.left = destination.position.left;
           marker.style.top = destination.position.top;
@@ -913,8 +945,7 @@
         detailTags.innerHTML = destination.tags.map((tag) => `<span>${tag}</span>`).join("");
 
         document.querySelectorAll(".marker").forEach((marker) => {
-          const isActive = marker.style.left === destination.position.left && marker.style.top === destination.position.top;
-          marker.classList.toggle("active", isActive);
+          marker.classList.toggle("active", marker.dataset.id === destination.id);
         });
       }
 
