@@ -8,6 +8,12 @@
       name="description"
       content="Luksuriøs personlig reisedagbok med reisemål i Norge, dagbokinnlegg, kart og portrett."
     />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap");
 
@@ -292,7 +298,7 @@
         position: absolute;
         left: 22px;
         top: 22px;
-        z-index: 2;
+        z-index: 999;
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -306,36 +312,40 @@
         color: var(--gold-soft);
       }
 
-      .map-svg {
+      #worldMap {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
-        display: block;
-      }
-
-      .map-stage {
-        position: absolute;
-        inset: 0;
         z-index: 1;
       }
 
-      .marker {
-        position: absolute;
-        transform: translate(-50%, -50%);
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        border: 2px solid rgba(255,255,255,0.9);
-        background: var(--gold-soft);
-        box-shadow: 0 0 0 10px rgba(216, 180, 102, 0.18), 0 16px 28px rgba(0,0,0,0.28);
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      .leaflet-container {
+        background: #0e1418;
+        font: inherit;
       }
 
-      .marker:hover, .marker:focus-visible, .marker.active {
-        transform: translate(-50%, -50%) scale(1.12);
-        box-shadow: 0 0 0 14px rgba(216, 180, 102, 0.28), 0 16px 32px rgba(0,0,0,0.3);
+      .leaflet-control-zoom {
+        border: 1px solid rgba(255,255,255,0.15) !important;
+        border-radius: 14px !important;
+        overflow: hidden;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+      }
+
+      .leaflet-control-zoom a {
+        background: rgba(13, 18, 20, 0.82) !important;
+        color: var(--text) !important;
+      }
+
+      .leaflet-popup-content-wrapper,
+      .leaflet-popup-tip {
+        background: rgba(17, 24, 29, 0.96);
+        color: var(--text);
+      }
+
+      .leaflet-popup-content {
+        margin: 12px 14px;
+        line-height: 1.5;
       }
 
       .detail-panel {
@@ -659,7 +669,7 @@
           <div class="map-layout">
             <div class="map-panel" aria-label="Interaktivt kart over reisemål">
               <div class="map-label">Verdenskart</div>
-              <div class="map-stage" id="mapStage"></div>
+              <div id="worldMap"></div>
             </div>
 
             <aside class="detail-panel" aria-live="polite">
@@ -791,8 +801,8 @@
       </section>
     </main>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-      const mapStage = document.getElementById("mapStage");
       const detailImage = document.getElementById("detailImage");
       const detailRegion = document.getElementById("detailRegion");
       const detailTitle = document.getElementById("detailTitle");
@@ -810,7 +820,8 @@
           description: "Bryggen, fjellene og den varme, åpne kystluften gjør Bergen til den perfekte start på en lang og opplevelsesrik reise i Norge.",
           image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
           tags: ["Brygge", "Fjord", "Høst"],
-          position: { left: "28%", top: "33%" }
+          lat: 60.3913,
+          lng: 5.3221
         },
         {
           id: "lofoten",
@@ -819,7 +830,8 @@
           description: "Lofotens kalde, dramatiske formasjoner og lys som glitrer over havet gir inntrykk av et sted som er både stille og evig i bevegelse.",
           image: "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80",
           tags: ["Nordlys", "Fjord", "Helg"],
-          position: { left: "31%", top: "23%" }
+          lat: 68.2215,
+          lng: 13.5436
         },
         {
           id: "oslo",
@@ -828,7 +840,8 @@
           description: "Byen der kultur, sjø og natur møtes i samme åndedrag. Her er det kort til kai, café, museum og et rolig sommerlyst hjerte.",
           image: "https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?auto=format&fit=crop&w=1200&q=80",
           tags: ["By", "Kultur", "Sjø"],
-          position: { left: "30%", top: "44%" }
+          lat: 59.9139,
+          lng: 10.7522
         },
         {
           id: "reykjavik",
@@ -837,7 +850,8 @@
           description: "Norsk og islendingsk kultur møtes i dette lekre, nordlige bylandskapet med vulkaniske landskap og stille hav.",
           image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
           tags: ["Kyst", "Geotermisk", "Nord"],
-          position: { left: "22%", top: "27%" }
+          lat: 64.1466,
+          lng: -21.9426
         },
         {
           id: "paris",
@@ -846,7 +860,8 @@
           description: "Lys, historie og caféer i et av verdens mest inspirerende byrom. Her går romantikk, kunst og dagligliv sammen.",
           image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80",
           tags: ["By", "Kunst", "Romantikk"],
-          position: { left: "41%", top: "34%" }
+          lat: 48.8566,
+          lng: 2.3522
         },
         {
           id: "marrakech",
@@ -855,7 +870,8 @@
           description: "Markeder, varme farger og sandfarget lys gjør Marrakech til et sted fylt av liv, lyd og mystikk.",
           image: "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&q=80",
           tags: ["Markeder", "Sand", "Farger"],
-          position: { left: "43%", top: "46%" }
+          lat: 31.6295,
+          lng: -7.9811
         },
         {
           id: "capetown",
@@ -864,7 +880,8 @@
           description: "Mellom hav, fjell og et fantastisk sollys ligger Cape Town som et møtepunkt mellom havets ro og storhetens drama.",
           image: "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80",
           tags: ["Hav", "Fjell", "Kyst"],
-          position: { left: "51%", top: "76%" }
+          lat: -33.9249,
+          lng: 18.4241
         },
         {
           id: "kyoto",
@@ -872,8 +889,9 @@
           region: "Japan",
           description: "Tempel, kuperte gater og stille skoglandskap gjør Kyoto til et sted som inviterer til ro og observasjon.",
           image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80",
-          tags: ["Tempel", "Hav", "Kultur"],
-          position: { left: "76%", top: "40%" }
+          tags: ["Tempel", "Kultur", "Ro"],
+          lat: 35.0116,
+          lng: 135.7681
         }
       ];
 
@@ -901,46 +919,26 @@
         }
       ];
 
-      function renderMap() {
-        mapStage.innerHTML = "";
+      let map;
+      let mapMarkers = {};
 
-        const svgNS = "http://www.w3.org/2000/svg";
-        const svg = document.createElementNS(svgNS, "svg");
-        svg.setAttribute("class", "map-svg");
-        svg.setAttribute("viewBox", "0 0 1000 520");
-        svg.setAttribute("role", "img");
-        svg.setAttribute("aria-label", "Verdenskart med reisemål");
+      function initializeMap() {
+        map = L.map("worldMap", {
+          zoomControl: true,
+          scrollWheelZoom: true,
+          worldCopyJump: true
+        }).setView([20, 0], 2);
 
-        svg.innerHTML = `
-          <defs>
-            <linearGradient id="landGlow" x1="0%" x2="100%" y1="0%" y2="100%">
-              <stop offset="0%" stop-color="rgba(216,180,102,0.28)" />
-              <stop offset="100%" stop-color="rgba(216,180,102,0.08)" />
-            </linearGradient>
-          </defs>
-          <g fill="rgba(255,255,255,0.05)" stroke="rgba(216,180,102,0.38)" stroke-width="1.6">
-            <path d="M78 120 L170 88 L248 98 L304 82 L360 110 L332 158 L286 188 L220 192 L168 220 L124 196 L90 164 Z"/>
-            <path d="M206 200 L238 178 L286 190 L308 220 L292 266 L246 286 L220 246 Z"/>
-            <path d="M288 146 L360 110 L420 120 L466 148 L510 170 L548 160 L576 192 L562 230 L532 252 L506 282 L468 318 L430 298 L402 332 L358 338 L332 300 L320 258 L292 228 L278 182 Z"/>
-            <path d="M420 178 L520 156 L596 172 L640 206 L700 196 L760 224 L746 274 L686 322 L618 344 L572 332 L516 290 L476 258 L438 224 Z"/>
-            <path d="M700 284 L778 278 L826 302 L854 330 L844 372 L788 394 L724 380 L692 342 Z"/>
-            <path d="M604 334 L622 390 L678 414 L704 456 L658 486 L612 454 L580 392 Z"/>
-            <path d="M764 332 L792 326 L830 354 L820 390 L788 408 L756 394 L742 356 Z"/>
-          </g>
-        `;
-
-        mapStage.appendChild(svg);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap contributors"
+        }).addTo(map);
 
         destinations.forEach((destination) => {
-          const marker = document.createElement("button");
-          marker.type = "button";
-          marker.className = "marker";
-          marker.dataset.id = destination.id;
-          marker.setAttribute("aria-label", `Vis ${destination.title}`);
-          marker.style.left = destination.position.left;
-          marker.style.top = destination.position.top;
-          marker.addEventListener("click", () => selectDestination(destination.id));
-          mapStage.appendChild(marker);
+          const marker = L.marker([destination.lat, destination.lng]).addTo(map);
+          marker.bindPopup(`<strong>${destination.title}</strong><br>${destination.region}`);
+          marker.on("click", () => selectDestination(destination.id));
+          mapMarkers[destination.id] = marker;
         });
       }
 
@@ -988,8 +986,12 @@
         detailDescription.textContent = destination.description;
         detailTags.innerHTML = destination.tags.map((tag) => `<span>${tag}</span>`).join("");
 
-        document.querySelectorAll(".marker").forEach((marker) => {
-          marker.classList.toggle("active", marker.dataset.id === destination.id);
+        Object.entries(mapMarkers).forEach(([key, marker]) => {
+          marker.setIcon(new L.Icon.Default());
+          if (key === destination.id) {
+            marker.openPopup();
+            map.flyTo([destination.lat, destination.lng], 4, { duration: 1.2 });
+          }
         });
       }
 
@@ -1017,12 +1019,13 @@
           image: formData.get("image"),
           tags: (formData.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean),
           description: formData.get("description"),
-          position: { left: "58%", top: "62%" }
+          lat: 40,
+          lng: 12
         };
 
         destinations.push(newDestination);
-        renderMap();
         renderGallery();
+        initializeMap();
         selectDestination(newDestination.id);
         form.reset();
         form.classList.add("hidden");
@@ -1044,7 +1047,7 @@
         form.classList.add("hidden");
       });
 
-      renderMap();
+      initializeMap();
       renderGallery();
       renderJournal();
       selectDestination("bergen");
